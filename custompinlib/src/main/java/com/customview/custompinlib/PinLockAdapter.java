@@ -1,11 +1,13 @@
 package com.customview.custompinlib;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,7 +20,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * Created by gney on 17/11/05
+ * Created by gney on 18/11/05
  */
 public class PinLockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -74,7 +76,7 @@ public class PinLockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 holder.number.setText(String.valueOf(mKeyValues[position]));
                 holder.number.setVisibility(View.VISIBLE);
-              //  holder.mNumberButton.setText(String.valueOf(mKeyValues[position]));
+                //  holder.mNumberButton.setText(String.valueOf(mKeyValues[position]));
                 holder.mNumberButton.setVisibility(View.VISIBLE);
                 holder.mNumberButton.setTag(mKeyValues[position]);
             }
@@ -159,7 +161,7 @@ public class PinLockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 // Set button backgrounds
 
                 if (mCustomizationOptionsBundle.getButtonBackgroundDrawable() != null) {
-                    if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
                         holder.mNumberButton.setBackgroundDrawable(
                                 mCustomizationOptionsBundle.getButtonBackgroundDrawable());
                     } else {
@@ -178,25 +180,20 @@ public class PinLockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void configureDeleteButtonHolder(DeleteViewHolder holder) {
         if (holder != null) {
-            if (mCustomizationOptionsBundle.isShowDeleteButton() && mPinLength > 0) {
-                holder.mButtonImage.setVisibility(View.VISIBLE);
-                if (mCustomizationOptionsBundle.getDeleteButtonDrawable() != null) {
-                   holder.mButtonImage.setImageDrawable(mCustomizationOptionsBundle.getDeleteButtonDrawable());
-                }
-                //holder.mButtonImage.setColorFilter(mCustomizationOptionsBundle.getTextColor(),
-                if (mCustomizationOptionsBundle.getDeleteButtonDefault()) {
-                    holder.mButtonImage.setColorFilter(mCustomizationOptionsBundle.getNumbersTextColor(), PorterDuff.Mode.SRC_ATOP);
-                } else {
-                    holder.mButtonImage.setColorFilter(mCustomizationOptionsBundle.getDeleteButtonColor(), PorterDuff.Mode.SRC_ATOP);
-                }
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        mCustomizationOptionsBundle.getDeleteButtonSize(),
-                        mCustomizationOptionsBundle.getDeleteButtonSize());
-
-                holder.mButtonImage.setLayoutParams(params);
-            } else {
-                holder.mButtonImage.setVisibility(View.GONE);
+            holder.mButtonImage.setVisibility(View.VISIBLE);
+            if (mCustomizationOptionsBundle.getDeleteButtonDrawable() != null) {
+                holder.mButtonImage.setImageDrawable(mCustomizationOptionsBundle.getDeleteButtonDrawable());
             }
+            if (mCustomizationOptionsBundle.getDeleteButtonDefault()) {
+                holder.mButtonImage.setColorFilter(mCustomizationOptionsBundle.getNumbersTextColor(), PorterDuff.Mode.SRC_ATOP);
+            } else {
+                holder.mButtonImage.setColorFilter(mCustomizationOptionsBundle.getDeleteButtonColor(), PorterDuff.Mode.SRC_ATOP);
+            }
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    mCustomizationOptionsBundle.getDeleteButtonSize(),
+                    mCustomizationOptionsBundle.getDeleteButtonSize());
+
+            holder.mButtonImage.setLayoutParams(params);
         }
     }
 
@@ -256,6 +253,7 @@ public class PinLockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public void setOnDeleteClickListener(OnDeleteClickListener onDeleteClickListener) {
+        Log.e("확인", "setOnDeleteClickListener");
         this.mOnDeleteClickListener = onDeleteClickListener;
     }
 
@@ -296,68 +294,30 @@ public class PinLockAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         LinearLayout mDeleteButton;
         ImageView mButtonImage;
 
+        @SuppressLint("ClickableViewAccessibility")
         public DeleteViewHolder(final View itemView) {
             super(itemView);
             mDeleteButton = (LinearLayout) itemView.findViewById(R.id.button);
             mButtonImage = (ImageView) itemView.findViewById(R.id.buttonImage);
 
-            if (mCustomizationOptionsBundle.isShowDeleteButton() && mPinLength > 0) {
-                mDeleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mOnDeleteClickListener != null) {
-                            mOnDeleteClickListener.onDeleteClicked();
-                        }
+            mDeleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnDeleteClickListener != null) {
+                        mOnDeleteClickListener.onDeleteClicked();
                     }
-                });
+                }
+            });
 
-                mDeleteButton.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (mOnDeleteClickListener != null) {
-                            mOnDeleteClickListener.onDeleteLongClicked();
-                        }
-                        return true;
+            mDeleteButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (mOnDeleteClickListener != null) {
+                        mOnDeleteClickListener.onDeleteLongClicked();
                     }
-                });
-
-                mDeleteButton.setOnTouchListener(new View.OnTouchListener() {
-                    private Rect rect;
-
-
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                            mButtonImage.setColorFilter(mCustomizationOptionsBundle
-                                    .getDeleteButtonPressesColor());
-                            rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-                        }
-                        if (event.getAction() == MotionEvent.ACTION_UP) {
-                            //mButtonImage.clearColorFilter();
-                            if (mCustomizationOptionsBundle.getDeleteButtonDefault()) {
-                                mButtonImage.clearColorFilter();
-                            } else {
-                                mButtonImage.setColorFilter(mCustomizationOptionsBundle.getDeleteButtonColor(),
-                                        PorterDuff.Mode.SRC_ATOP);
-                            }
-                        }
-                        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                            if (!rect.contains(v.getLeft() + (int) event.getX(),
-                                    v.getTop() + (int) event.getY())) {
-                                //mButtonImage.clearColorFilter();
-                                if (mCustomizationOptionsBundle.getDeleteButtonDefault()) {
-                                    mButtonImage.clearColorFilter();
-                                } else {
-                                    mButtonImage.setColorFilter(mCustomizationOptionsBundle.getDeleteButtonColor(),
-                                            PorterDuff.Mode.SRC_ATOP);
-                                }
-
-                            }
-                        }
-                        return false;
-                    }
-                });
-            }
+                    return true;
+                }
+            });
         }
     }
 

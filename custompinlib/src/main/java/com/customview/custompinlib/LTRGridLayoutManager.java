@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 /**
- * Created by gney on 17/11/05
+ * Created by gney on 18/11/05
  */
 
 public class LTRGridLayoutManager extends GridLayoutManager {

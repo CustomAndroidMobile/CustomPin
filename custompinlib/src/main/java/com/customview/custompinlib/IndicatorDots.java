@@ -13,7 +13,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Created by gney on 17/11/05
+ * Created by gney on 18/11/05
  */
 public class IndicatorDots extends LinearLayout {
 
